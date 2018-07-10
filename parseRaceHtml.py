@@ -152,7 +152,7 @@ def parseRaceHtml(url, proxies=None, debug=None):
     else:
         ## For offline testing
         file = open('race_from_web.html')    # instead of reading from web
-        response = file.read()
+        pageSource = file.read()
         file.close
 
     parser = _HTMLToRace()

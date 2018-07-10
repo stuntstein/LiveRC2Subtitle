@@ -9,12 +9,6 @@ NorcalScore2Subtitle
 20171212 Added Race Title. Moved generated files to output folder. Added race _duration to subtitle.
 '''
 
-from HTMLParser import HTMLParser, HTMLParseError
-from htmlentitydefs import name2codepoint
-import re
-import urllib
-import urllib2
-#import numpy as np
 import sys
 import os
 import argparse
@@ -102,7 +96,8 @@ def parseResult(raceData):
         addSub.count = 0
         time = 0.0
 
-        ## Init drivers for subtitle text
+        ## Init drivers for subtitle text.
+        ## More drivers could be added after qual!
         drivers = []
         for driverName in heat['qualOrder']:
             drivers.append({'name':driverName,'lapCnt':0,'lapTime':0})
@@ -128,16 +123,12 @@ def parseResult(raceData):
                         d['lapTime'] = 0
 
                 while n < len(oneList) and oneList[n]['lapData']['raceTime'] < raceTime:
-
                     ## Swap 2 driver positions
                     nextEntry = oneList[n]
                     pos = nextEntry['lapData']['pos'] - 1   # Next entry. Get his position
-                    if pos >= len(drivers):         # Sometimes I see a position higher that the number of drivers!
-                        pos -= 1                    # If only 1 too high trim it down.
-                    else:
-                        if pos > len(drivers):      # Stop if pos is too high. Something is bad
-                            print 'ERROR',pos,nextEntry
-                            exit(1)
+                    if pos >= len(drivers):                 # more driver have been added. Let append to drivers
+                        drivers.append({'name':nextEntry['driver'],'lapCnt':nextEntry['lapData']['lapNum'],'lapTime':nextEntry['lapData']['time']})
+
                     tmp = drivers[pos]                    # Find the driver on that position
                     if tmp['name'] != nextEntry['driver']:    # Check that it is not the same driver
                     # swap position. Tmp goes to nextEntry's old position
